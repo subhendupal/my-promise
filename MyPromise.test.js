@@ -1,4 +1,3 @@
-import { MyPromise } from "./MyPromise" 
 const MyPromise = require("./MyPromise.js")
 // const MyPromise = Promise
 
@@ -155,3 +154,67 @@ function promise({ value = DEFAULT_VALUE, fail = false } = {}) {
     fail ? reject(value) : resolve(value)
   })
 }
+
+
+test('MyPromise resolves correctly', () => {
+    return new MyPromise((resolve) => {
+        setTimeout(() => {
+            resolve('Resolved!');
+        }, 100);
+    }).then(data => {
+        expect(data).toBe('Resolved!');
+    });
+});
+
+test('MyPromise rejects correctly', () => {
+    return new MyPromise((_, reject) => {
+        setTimeout(() => {
+            reject('Rejected!');
+        }, 100);
+    }).catch(error => {
+        expect(error).toBe('Rejected!');
+    });
+});
+
+test('MyPromise handles chaining correctly', () => {
+    return new MyPromise((resolve) => {
+        resolve(1);
+    }).then(data => {
+        expect(data).toBe(1);
+        return data + 1;
+    }).then(data => {
+        expect(data).toBe(2);
+    });
+});
+
+test('MyPromise handles errors correctly', () => {
+    return new MyPromise((_, reject) => {
+        reject('Error!');
+    }).then(() => {
+        throw new Error('This should not run');
+    }).catch(error => {
+        expect(error).toBe('Error!');
+    });
+});
+
+test('MyPromise works with async/await', async () => {
+    const data = await new MyPromise((resolve) => {
+        setTimeout(() => {
+            resolve('Async/Await Resolved!');
+        }, 100);
+    });
+    expect(data).toBe('Async/Await Resolved!');
+});
+
+test('MyPromise rejects with async/await', async () => {
+    expect.assertions(1);
+    try {
+        await new MyPromise((_, reject) => {
+            setTimeout(() => {
+                reject('Async/Await Rejected!');
+            }, 100);
+        });
+    } catch (error) {
+        expect(error).toBe('Async/Await Rejected!');
+    }
+});

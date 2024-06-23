@@ -7,9 +7,9 @@
     "test": "jest --watchAll --noStackTrace"
   },
   "keywords": [],
-  "author": "",
+  "author": "subhendupal",
   "license": "ISC",
   "devDependencies": {
-    "jest": "^27.5.1"
+    "jest": "^29.7.0"
   }
 }
