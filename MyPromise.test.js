@@ -61,7 +61,7 @@ describe("finally", () => {
     return Promise.allSettled([successPromise, failPromise])
   })
 
-  it("with multiple finallys for same promise", () => {
+  it("with multiple finally's for same promise", () => {
     const checkFunc = v => expect(v).toBeUndefined()
     const mainPromise = promise()
     const promise1 = mainPromise.finally(checkFunc)
