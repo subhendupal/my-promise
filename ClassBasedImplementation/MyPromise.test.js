@@ -156,65 +156,121 @@ function promise({ value = DEFAULT_VALUE, fail = false } = {}) {
 }
 
 
+
 test('MyPromise resolves correctly', () => {
-    return new MyPromise((resolve) => {
-        setTimeout(() => {
-            resolve('Resolved!');
-        }, 100);
-    }).then(data => {
-        expect(data).toBe('Resolved!');
-    });
-});
+  return new MyPromise((resolve) => {
+    setTimeout(() => {
+      resolve('Resolved!')
+    }, 100)
+  }).then(data => {
+    expect(data).toBe('Resolved!')
+  })
+})
 
 test('MyPromise rejects correctly', () => {
-    return new MyPromise((_, reject) => {
-        setTimeout(() => {
-            reject('Rejected!');
-        }, 100);
-    }).catch(error => {
-        expect(error).toBe('Rejected!');
-    });
-});
+  return new MyPromise((_, reject) => {
+    setTimeout(() => {
+      reject('Rejected!')
+    }, 100)
+  }).catch(error => {
+    expect(error).toBe('Rejected!')
+  })
+})
 
 test('MyPromise handles chaining correctly', () => {
-    return new MyPromise((resolve) => {
-        resolve(1);
-    }).then(data => {
-        expect(data).toBe(1);
-        return data + 1;
-    }).then(data => {
-        expect(data).toBe(2);
-    });
-});
+  return new MyPromise((resolve) => {
+    resolve(1)
+  }).then(data => {
+    expect(data).toBe(1)
+    return data + 1
+  }).then(data => {
+    expect(data).toBe(2)
+  })
+})
 
 test('MyPromise handles errors correctly', () => {
-    return new MyPromise((_, reject) => {
-        reject('Error!');
-    }).then(() => {
-        throw new Error('This should not run');
-    }).catch(error => {
-        expect(error).toBe('Error!');
-    });
-});
+  return new MyPromise((_, reject) => {
+    reject('Error!')
+  }).then(() => {
+    throw new Error('This should not run')
+  }).catch(error => {
+    expect(error).toBe('Error!')
+  })
+})
 
 test('MyPromise works with async/await', async () => {
-    const data = await new MyPromise((resolve) => {
-        setTimeout(() => {
-            resolve('Async/Await Resolved!');
-        }, 100);
-    });
-    expect(data).toBe('Async/Await Resolved!');
-});
+  const data = await new MyPromise((resolve) => {
+    setTimeout(() => {
+      resolve('Async/Await Resolved!')
+    }, 100)
+  })
+  expect(data).toBe('Async/Await Resolved!')
+})
 
 test('MyPromise rejects with async/await', async () => {
-    expect.assertions(1);
-    try {
-        await new MyPromise((_, reject) => {
-            setTimeout(() => {
-                reject('Async/Await Rejected!');
-            }, 100);
-        });
-    } catch (error) {
-        expect(error).toBe('Async/Await Rejected!');
-    }
-});
+  expect.assertions(1)
+  try {
+    await new MyPromise((_, reject) => {
+      setTimeout(() => {
+        reject('Async/Await Rejected!')
+      }, 100)
+    })
+  } catch (error) {
+    expect(error).toBe('Async/Await Rejected!')
+  }
+})
+
+test('MyPromise.all resolves correctly', () => {
+  return MyPromise.all([
+    MyPromise.resolve(1),
+    MyPromise.resolve(2),
+    MyPromise.resolve(3)
+  ]).then(values => {
+    expect(values).toEqual([1, 2, 3])
+  })
+})
+
+test('MyPromise.all rejects if one promise rejects', () => {
+  return MyPromise.all([
+    MyPromise.resolve(1),
+    MyPromise.reject('Error!'),
+    MyPromise.resolve(3)
+  ]).catch(error => {
+    expect(error).toBe('Error!')
+  })
+})
+
+test('MyPromise.race resolves correctly', () => {
+  return MyPromise.race([
+    new MyPromise(resolve => setTimeout(() => resolve('First'), 100)),
+    new MyPromise(resolve => setTimeout(() => resolve('Second'), 200))
+  ]).then(value => {
+    expect(value).toBe('First')
+  })
+})
+
+test('MyPromise.race rejects correctly', () => {
+  return MyPromise.race([
+    new MyPromise((_, reject) => setTimeout(() => reject('First Error'), 100)),
+    new MyPromise((_, reject) => setTimeout(() => reject('Second Error'), 200))
+  ]).catch(error => {
+    expect(error).toBe('First Error')
+  })
+})
+
+test('MyPromise.finally works correctly on resolve', () => {
+  const mockCallback = jest.fn()
+  return MyPromise.resolve('Resolved').finally(mockCallback).then(data => {
+    expect(data).toBe('Resolved')
+    expect(mockCallback).toHaveBeenCalled()
+  })
+})
+
+test('MyPromise.finally works correctly on reject', () => {
+  const mockCallback = jest.fn()
+  return MyPromise.reject('Rejected').finally(mockCallback).catch(error => {
+    expect(error).toBe('Rejected')
+    expect(mockCallback).toHaveBeenCalled()
+  })
+})
+

@@ -40,7 +40,7 @@ class MyPromise {
     }
 
     #onSuccess(value) {
-        queueMicrotask(() => {
+        setTimeout(() => {
             if (this.#state !== STATE.PENDING) return
 
             if (value instanceof MyPromise) {
@@ -55,7 +55,7 @@ class MyPromise {
     }
 
     #onFail(value) {
-        queueMicrotask(() => {
+        setTimeout(() => {
             if (this.#state !== STATE.PENDING) return
 
             if (value instanceof MyPromise) {
